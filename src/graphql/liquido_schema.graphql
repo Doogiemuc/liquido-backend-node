@@ -1,0 +1,132 @@
+"A liquido user. A user can be in one or more teams."
+type User {
+	id: String!
+	authyId: Long! 
+	name: String! 
+	email: String! 
+	mobilephone: String!
+	website: String
+	picture: String 
+	createdAt: Date 
+	updatedAt: Date 
+}
+
+"One Team with admins, members and polls"
+type Team  {
+	id: String!
+	teamName: String!
+	inviteCode: String 
+	admins: [User!]!
+	members: [User]! 
+	polls: [Poll]
+	createdAt: Date 
+	updatedAt: Date 
+}
+
+"A Poll in a team"
+type Poll {
+	id: String
+	title: String! 
+	numCompetingProposals: Int!
+	proposals: [Law]
+	status: PollStatus!
+	numBallots: Long
+	votingEndAt: LocalDateTime 
+	votingStartAt: LocalDateTime 
+	winner: Law 
+	#duelMatrix: Matrix 
+	createdAt: Date 
+	updatedAt: Date 
+}
+
+type Law {
+	id: String!
+	title: String! 
+	description: String! 
+	icon: String 
+	"ELABORATION, VOTING, LAW, LOST, RETENTION, RETRACTED"
+	status: LawStatus!
+	"Is a proposal created by the currently logged in user?"
+	isCreatedByCurrentUser: Boolean
+	"Is a proposal already liked by the currently logged in user?"
+	isLikedByCurrentUser: Boolean
+	numComments: Int
+	numSupporters: Int
+	poll: Poll
+	reachedQuorumAt: LocalDateTime 
+	supporters: [User] 
+	createdBy: User
+	createdAt: Date 
+	updatedAt: Date 
+}
+
+"Lifecycle of a proposal"
+enum LawStatus {
+	PROPOSAL
+	ELABORATION
+	VOTING
+	LAW
+	LOST
+	RETENTION
+	RETRACTED
+}
+
+"Lifecycle of a poll"
+enum PollStatus {
+	ELABORATION
+	FINISHED
+	VOTING
+}
+
+"GraphQL input parameter when a new user is created (no ID field)"
+input UserInput {
+	email: String! 
+	mobilephone: String!
+	name: String! 
+	picture: String 
+	website: String 
+}
+
+"Response for createNewTeam and joinTeam mutations"
+type CreateOrJoinTeamResponse {
+	jwt: String
+	team: Team
+	user: User
+}
+
+
+
+"GraphQL Query root - fetch a value "
+type Query {
+
+	"Get one team by its ID"
+	team(id: String!): Team
+
+	"Get one poll by its ID"
+	poll(id: String!): Poll
+
+}
+
+"GraphQL mutations - create or update something"
+type Mutation {
+	"Create a new team"
+	createNewTeam(admin: UserInput!, teamName: String!): CreateOrJoinTeamResponse
+}
+
+
+
+
+
+
+
+
+
+"Scalar representing an instant in time"
+scalar Date
+"Scalar representing a local date-time"
+scalar LocalDateTime
+"Long type"
+scalar Long
+
+#"Built-in scalar for map-like structures"
+#scalar LsonScalar
