@@ -10,7 +10,13 @@ console.log config
 
 client = new MongoClient(config.liquido.db.URI, { useNewUrlParser: true, useUnifiedTopology: true })
 client.connect (err) ->
-	console.log "DB connection error", err
+	if err
+		console.log "DB connection error", err
 
 database = client.db config.liquido.db.dbName
 
+
+
+
+console.log "Closing connection"
+# client.close()
