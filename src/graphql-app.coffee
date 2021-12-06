@@ -1,21 +1,19 @@
 fs = require 'fs'
 path = require 'path'
-# express = require 'express'
-# morgan = require 'morgan'
 { GraphQLServer } = require 'graphql-yoga'
 { mergeResolvers } = require '@graphql-tools/merge'
+#TODO: Logging:    morgan = require 'morgan'
 
+# Load LIQUIDO GraphQL Schema - TypeDefs
 liquido_schema_filename = path.join 'src', 'graphql', 'liquido_schema.graphql'
 typeDefs = String fs.readFileSync liquido_schema_filename
 
+# Load LIQUIDO GraphQL - resolvers
 teamService = require './teams/team-service'
 pollService = require './polls/poll-service'
-
-console.log "teamService", teamService
-console.log "pollService", pollService
-
 resolvers = mergeResolvers [teamService, pollService]
 
+# Start graphq-yoga server
 graphQL_server_options =
 	port: 4000
 	endpoint: '/graphql'
@@ -26,7 +24,7 @@ graphQL_server_options =
 server = new GraphQLServer { typeDefs, resolvers }
 console.log "Liquido GraphQL backend is starting ..."
 server.start graphQL_server_options, ({port, endpoint}) ->
-	console.log resolvers
+	console.log "resolvers = ", resolvers
 	console.log "Listening http://localhost:#{port}#{endpoint} in #{process.env.NODE_ENV} mode."
 	
 

@@ -13,6 +13,7 @@ pollsData = {
 				id: "101"
 				title: "As fast as possible"
 				description: "But this will be a lot of stress"
+				status: "ELABORATION"
 			]
 		]
 }
@@ -20,11 +21,11 @@ pollsData = {
 
 # Get one poll by its id
 getPoll = (parent, args) ->
-	console.log "query poll(id=#{args.id})"
+	console.log "query Poll(id=#{args.id})"
 	pollsData["1"][0]
 
 getPollsOfTeam = (parent, args) ->
-	console.log "query polls of team", args
+	console.log "query Polls of Team.id=" + parent.id
 	pollsData["1"]
 
 
@@ -33,4 +34,4 @@ module.exports =
 	Query:
 		poll: getPoll						# get one poll by its id
 	Team:
-		polls: getPollsOfTeam
+		polls: getPollsOfTeam		# get all polls of a team
