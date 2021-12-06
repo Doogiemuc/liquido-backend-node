@@ -1,5 +1,5 @@
 # Do NOT check in local config with credentials
-./config/config.local.js
+config/*.local.js
 
 # Logs
 logs
