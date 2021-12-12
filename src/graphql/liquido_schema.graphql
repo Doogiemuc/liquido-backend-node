@@ -111,6 +111,9 @@ type Query {
 type Mutation {
 	"Create a new team"
 	createNewTeam(admin: UserInput!, teamName: String!): CreateOrJoinTeamResponse
+
+	"Admin creates a new poll"
+  createPoll(title: String!): Poll
 }
 
 

@@ -33,7 +33,7 @@ resolvers =
 		isCreatedByCurrentUser: pollService.isCreatedByCurrentUser
 	Mutation:
 		createNewTeam: teamService.createNewTeam
-		#createNewPoll: pollService.createNewPoll
+		createPoll: pollService.createPoll
 
 # GraphQL-yoga server options
 graphQL_server_options =

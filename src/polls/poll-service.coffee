@@ -33,10 +33,15 @@ isCreatedByCurrentUser = (parent, args) ->
 	console.log("isCreatedByCurrentUser", parent, args)
 	false
 
-createNewPoll = (parent, args, ctx, info) ->
+createPoll = (parent, args, ctx, info) ->
 	if !ctx.user then throw "Must be logged in to create a new poll!"
 	if !ctx.isAdmin then throw "Must be admin to create a new poll"
-	
+	newPoll =
+		id: "DummyIdNewPoll"
+		title: args.title
+		proposals: []
+		status: "ELABORATION"
+
 
 
 # These exports will become GraphQL resolvers and mutations
@@ -44,3 +49,4 @@ module.exports =
 	getPoll: getPoll
 	isCreatedByCurrentUser: isCreatedByCurrentUser
 	getPollsOfTeam: getPollsOfTeam
+	createPoll: createPoll
