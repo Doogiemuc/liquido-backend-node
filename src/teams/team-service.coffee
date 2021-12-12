@@ -36,36 +36,60 @@ getTeam = (parent, args, context, info) ->
 	console.log "query team", args
 	teamsData[args.id]		
 
+#
 # Create a new team
+#
+# mutation {
+# 	createNewTeam(teamName:"MyNewTeam", admin: {
+# 		name: "NewTeam Admin1",
+# 		email: "admin@mynewteam.org",
+# 		mobilephone: "+49 555 1234565"
+# 	})
+# 	{ jwt team { id } user { id }}
+# }
+#
+# @param parent the parent object, in this case the GraphQL root
+# @param args { teamName admin { name email mobilephone } }
+# @param ctx GraphQL context with authenticated user
+# @param info (optional) global info
+# @return jwt for client authentication, 
+#         the team as stored in the DB (with ID)
+#         and the team's admin as stored in the DB
 createNewTeam = (parent, args, ctx, info) ->
-	console.log "createNewTeam", parent, args
-	# TODO: validate args
+	console.log "createNewTeam", args
+	
+	# Create new team with one first admin
 	now = Date.now()
-	newUser = args.admin
-	newTeam = {
-		id: dummyId(),
+	newUser =
+		id: dummyId()						# MongoDb will create internal DB "_id" but only for the team, not the embedded admins and members!
+		name: args.admin.name		# args are already validated by GraphQL, nice
+		email: args.admin.email
+		mobilephone: args.admin.mobilephone
+
+	newTeam =
+		id: dummyId()						# This is our "liquido id" that we expose to the client. We will never expose the DB internal mongoDB "_id" field.
 		teamName: args.teamName,
 		inviteCode: "F3D" + now
 		admins: [ newUser ]
 		members: []
-	}
-	#TODO store new Team in DB
-	newUser.id = dummyId()
-	#return newly created team with admin and JWT
+	
+	# store new Team in DB	
+	teams = ctx.db.collection('teams')
+	result = await teams.insertOne(newTeam)
+	console.log "createNewTeam", newTeam.teamName, "[OK]", result.insertedId
+
+	#return newly created team with admin user and JWT to authenticate future requests
 	{
 		jwt: "dummyJWT" + now,
 		team: newTeam,
 		user: newUser
 	}
 
-
 # Just simply create any random dummy ID. (Not a spec compliant UUID)
-dummyId = () -> "ID_" + Math.random().toString(16).slice(2)
+dummyId = () -> "ID_" + Math.random().toString(16).slice(2).toUpperCase()
 
 
 # Export GraphQL resolver functions
 module.exports =
-	Query:
-		team: getTeam
-	Mutation:
-		createNewTeam: createNewTeam
+	getTeam: getTeam
+	createNewTeam: createNewTeam

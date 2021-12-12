@@ -18,20 +18,29 @@ pollsData = {
 		]
 }
 
-
 # Get one poll by its id
 getPoll = (parent, args) ->
 	console.log "query Poll(id=#{args.id})"
 	pollsData["1"][0]
 
+# get list of polls of a Team
 getPollsOfTeam = (parent, args) ->
 	console.log "query Polls of Team.id=" + parent.id
 	pollsData["1"]
 
+# check if a proposal is created by the currently logged in user
+isCreatedByCurrentUser = (parent, args) ->
+	console.log("isCreatedByCurrentUser", parent, args)
+	false
 
-# Export GraphQL resolver functions
+createNewPoll = (parent, args, ctx, info) ->
+	if !ctx.user then throw "Must be logged in to create a new poll!"
+	if !ctx.isAdmin then throw "Must be admin to create a new poll"
+	
+
+
+# These exports will become GraphQL resolvers and mutations
 module.exports =
-	Query:
-		poll: getPoll						# get one poll by its id
-	Team:
-		polls: getPollsOfTeam		# get all polls of a team
+	getPoll: getPoll
+	isCreatedByCurrentUser: isCreatedByCurrentUser
+	getPollsOfTeam: getPollsOfTeam
